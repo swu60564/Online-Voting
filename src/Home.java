@@ -7,9 +7,7 @@ import javax.swing.JPanel;
 import java.awt.SystemColor;
 import java.awt.Color;
 
-public class Home {
-
-	private JFrame frame;
+public class Home extends JFrame {
 
 	/**
 	 * Launch the application.
@@ -19,7 +17,7 @@ public class Home {
 			public void run() {
 				try {
 					Home window = new Home();
-					window.frame.setVisible(true);
+					window.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -38,15 +36,14 @@ public class Home {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 750, 480);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(null);
+		setBounds(100, 100, 750, 480);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		getContentPane().setLayout(null);
 		
 		JPanel homePanel = new JPanel();
 		homePanel.setBackground(new Color(30, 144, 255));
 		homePanel.setBounds(0, 0, 734, 441);
-		frame.getContentPane().add(homePanel);
+		getContentPane().add(homePanel);
 		homePanel.setLayout(null);
 		
 		JLabel lblNewLabel = new JLabel("Online Voting");
