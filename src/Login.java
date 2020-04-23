@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*; 
 import java.awt.event.*;
 
-public class Login extends Home {
+public class Login extends  JFrame{
 
 	private JFrame frame;
 	private JTextField id_textField;
@@ -16,7 +16,7 @@ public class Login extends Home {
 			public void run() {
 				try {
 					Login window = new Login();
-					window.frame.setVisible(true);
+					window.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -35,23 +35,24 @@ public class Login extends Home {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.getContentPane().setBackground(Color.WHITE);
-		frame.setBounds(100, 100, 750, 480);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(null);
+		
+		getContentPane().setBackground(Color.WHITE);
+		setBounds(100, 100, 750, 480);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		getContentPane().setLayout(null);
 		
 		JPanel loginPanel = new JPanel();
 		loginPanel.setBackground(new Color(30, 144, 255));
 		loginPanel.setBounds(0, 0, 734, 441);
-		frame.getContentPane().add(loginPanel);
+		getContentPane().add(loginPanel);
 		loginPanel.setLayout(null);
 		
 		JButton loginButton = new JButton("Log In");
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Home home = new Home();
-				//home.setVisible(true);
+				home.setVisible(true);
+				setVisible(false);
 			}
 		});
 		loginButton.setForeground(new Color(255, 255, 255));
