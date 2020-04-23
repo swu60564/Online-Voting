@@ -2,9 +2,12 @@ import javax.swing.*;
 import java.awt.*; 
 import java.awt.event.*;
 
+
 public class Login extends  JFrame{
 
-	private JFrame frame;
+
+
+
 	private JTextField id_textField;
 	private JTextField pss_textField;
 
@@ -17,6 +20,9 @@ public class Login extends  JFrame{
 				try {
 					Login win = new Login();
 					win.setVisible(true);
+					Login window = new Login();
+					window.setVisible(true);
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -34,7 +40,7 @@ public class Login extends  JFrame{
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		
+
 		getContentPane().setBackground(Color.WHITE);
 		setBounds(100, 100, 750, 480);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

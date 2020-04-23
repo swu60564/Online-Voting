@@ -7,7 +7,9 @@ import javax.swing.JPanel;
 import java.awt.SystemColor;
 import java.awt.Color;
 
+
 public class Home extends  JFrame {
+
 
 
 	/**
@@ -37,7 +39,7 @@ public class Home extends  JFrame {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		
+
 		setBounds(100, 100, 750, 480);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setLayout(null);
