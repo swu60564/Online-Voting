@@ -15,8 +15,8 @@ public class Login extends  JFrame{
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Login window = new Login();
-					window.setVisible(true);
+					Login win = new Login();
+					win.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -30,7 +30,6 @@ public class Login extends  JFrame{
 	public Login() {
 		initialize();
 	}
-
 	/**
 	 * Initialize the contents of the frame.
 	 */

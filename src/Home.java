@@ -9,7 +9,6 @@ import java.awt.Color;
 
 public class Home extends  JFrame {
 
-	
 
 	/**
 	 * Launch the application.
