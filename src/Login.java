@@ -1,7 +1,7 @@
 import javax.swing.*;
 import java.awt.*; 
 import java.awt.event.*;
-
+import java.sql.*;
 
 public class Login extends  JFrame{
 
@@ -20,9 +20,7 @@ public class Login extends  JFrame{
 				try {
 					Login win = new Login();
 					win.setVisible(true);
-					Login window = new Login();
-					window.setVisible(true);
-
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -55,9 +53,25 @@ public class Login extends  JFrame{
 		JButton loginButton = new JButton("Log In");
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Home home = new Home();
-				home.setVisible(true);
-				setVisible(false);
+				try {
+					Class.forName("com.mysql.cj.jdbc.Driver");
+					Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/login?useTimezone=true&serverTimezone=UTC","root","");
+					Statement stmt = conn.createStatement();
+					String sql ="Select * from user where ID='"+id_textField.getText()+"' and BOD='"+pss_textField.getText()+"'";
+					ResultSet rs =stmt.executeQuery(sql);
+					if(rs.next()) {
+						JOptionPane.showMessageDialog(null,"Success");
+						Home home = new Home();
+						home.setVisible(true);
+						setVisible(false);
+					}else {
+						JOptionPane.showMessageDialog(null,"NO");
+					}
+					conn.close();
+				}catch(Exception e){
+					System.out.print(e);
+					
+				}
 			}
 		});
 		loginButton.setForeground(new Color(255, 255, 255));
