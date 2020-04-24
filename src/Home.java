@@ -3,10 +3,12 @@ import java.awt.Font;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.SystemColor;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Base64;
@@ -31,9 +33,9 @@ import java.awt.event.ActionEvent;
 
 
 public class Home extends  JFrame {
+	
 	private JTextField textField;
 	private JTextField textField_1;
-
 
 	/**
 	 * Launch the application.
@@ -42,7 +44,8 @@ public class Home extends  JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Home window = new Home();
+					
+					Home window = new Home(null);
 					window.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -50,15 +53,7 @@ public class Home extends  JFrame {
 			}
 		});
 	}
-
-	/**
-	 * Create the application.
-	 */
-	public Home() {
-		initialize();
-	}
-
-    public static KeyPair generateKeyPair() throws Exception {
+	public static KeyPair generateKeyPair() throws Exception {
 
         KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
 
@@ -185,13 +180,14 @@ public class Home extends  JFrame {
 
 
         return publicSignature.verify(signatureBytes);
-
     }
 
 	/**
-	 * Initialize the contents of the frame.
+	 * Create the application.
+	 * @param string 
+
 	 */
-	private void initialize() {
+	public Home(String name) {
 		
 
 		setBounds(100, 100, 750, 480);
@@ -215,24 +211,26 @@ public class Home extends  JFrame {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					
-					
-					
 					KeyPair pair = generateKeyPair();
 					String plainText = textField.getText();
 					
+					System.out.println("Insert vote " + name);
 					String cipherText = encrypt(plainText, pair.getPublic());
 					String decipheredMessage = decrypt(cipherText, pair.getPrivate());
 				    System.out.print(decipheredMessage);
 				    textField_1.setText(cipherText);
 				    
-				    Class.forName("com.mysql.cj.jdbc.Driver");
-					Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/login?useTimezone=true&serverTimezone=UTC","root","ploy");
-					Statement stmt = conn.createStatement();
-					String sql ="INSERT INTO user"+ "(Vote)" +" VALUES ('"+cipherText+"')";
-					stmt.executeUpdate(sql);
-				 
+				    
+				    Connection con = (Connection)DriverManager.getConnection("jdbc:mysql://localhost:3306/login?useTimezone=true&serverTimezone=UTC","root","");
+				    PreparedStatement st = (PreparedStatement) con
+	                        .prepareStatement("Update user set Vote=? where ID=?");
+
+	                    st.setString(1, cipherText);
+	                    st.setString(2, name);
+	                    st.executeUpdate();
+	                   
 				}catch(Exception e1){
-					e1.printStackTrace();
+					e1.printStackTrace(); 
 					
 				}
 				
@@ -243,9 +241,6 @@ public class Home extends  JFrame {
 		vote.setBounds(316, 264, 85, 21);
 		homePanel.add(vote);
 		
-		JLabel user = new JLabel("New label");
-		user.setBounds(613, 106, 45, 13);
-		homePanel.add(user);
 		
 		textField = new JTextField();
 		textField.setBounds(301, 217, 116, 19);
@@ -257,13 +252,23 @@ public class Home extends  JFrame {
 		homePanel.add(textField_1);
 		textField_1.setColumns(10);
 		
-		JButton btnNewButton = new JButton("New button");
+		JButton btnNewButton = new JButton("Logout");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-			}
+				int a = JOptionPane.showConfirmDialog(btnNewButton, "Are you sure?");
+                // JOptionPane.setRootFrame(null);
+                if (a == JOptionPane.YES_OPTION) {
+                    dispose();
+                    Login obj = new Login();
+                    
+                    obj.setVisible(true);
+                    setVisible(false);
+                }
+               
+            }
+			
 		});
-		btnNewButton.setBounds(316, 374, 85, 21);
+		btnNewButton.setBounds(639, 395, 85, 21);
 		homePanel.add(btnNewButton);
 	}
 }

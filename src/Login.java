@@ -9,7 +9,7 @@ public class Login extends  JFrame{
 
 
 	private JTextField id_textField;
-	private JTextField pss_textField;
+	private JPasswordField passwordField;
 
 	/**
 	 * Launch the application.
@@ -32,13 +32,7 @@ public class Login extends  JFrame{
 	 * Create the application.
 	 */
 	public Login() {
-		initialize();
-	}
-	/**
-	 * Initialize the contents of the frame.
-	 */
-	private void initialize() {
-
+	
 		getContentPane().setBackground(Color.WHITE);
 		setBounds(100, 100, 750, 480);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -50,24 +44,29 @@ public class Login extends  JFrame{
 		getContentPane().add(loginPanel);
 		loginPanel.setLayout(null);
 		
+		
 		JButton loginButton = new JButton("Log In");
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 					Class.forName("com.mysql.cj.jdbc.Driver");
-					Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/login?useTimezone=true&serverTimezone=UTC","root","");
-					Statement stmt = conn.createStatement();
-					String sql ="Select * from user where ID='"+id_textField.getText()+"' and BOD='"+pss_textField.getText()+"'";
-					ResultSet rs =stmt.executeQuery(sql);
+					Connection connection = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/login?useTimezone=true&serverTimezone=UTC","root","");
+					PreparedStatement st = (PreparedStatement) connection
+	                        .prepareStatement("Select ID, BOD from user where ID=? and BOD=?");
+
+	                    st.setString(1, id_textField.getText());
+	                    st.setString(2, passwordField.getText());
+	                    ResultSet rs = st.executeQuery();
 					if(rs.next()) {
+						
 						JOptionPane.showMessageDialog(null,"Success");
-						Home home = new Home();
+						Home home = new Home(id_textField.getText());
 						home.setVisible(true);
 						setVisible(false);
 					}else {
 						JOptionPane.showMessageDialog(null,"NO");
 					}
-					conn.close();
+					
 				}catch(Exception e){
 					System.out.print(e);
 					
@@ -105,11 +104,6 @@ public class Login extends  JFrame{
 		loginPanel.add(id_textField);
 		id_textField.setColumns(10);
 		
-		pss_textField = new JTextField();
-		pss_textField.setBounds(179, 257, 342, 35);
-		loginPanel.add(pss_textField);
-		pss_textField.setColumns(10);
-		
 		JLabel lblNewLabel_1 = new JLabel("**Password is your birth of date**");
 		lblNewLabel_1.setForeground(new Color(255, 255, 0));
 		lblNewLabel_1.setFont(new Font("Calibri", Font.PLAIN, 13));
@@ -127,5 +121,9 @@ public class Login extends  JFrame{
 		lblNewLabel_3.setFont(new Font("Calibri", Font.PLAIN, 13));
 		lblNewLabel_3.setBounds(179, 145, 180, 14);
 		loginPanel.add(lblNewLabel_3);
+		
+		passwordField = new JPasswordField();
+		passwordField.setBounds(179, 262, 342, 35);
+		loginPanel.add(passwordField);
 	}
 }
