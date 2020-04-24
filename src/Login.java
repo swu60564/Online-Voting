@@ -5,9 +5,6 @@ import java.sql.*;
 
 public class Login extends  JFrame{
 
-
-
-
 	private JTextField id_textField;
 	private JTextField pss_textField;
 
@@ -55,12 +52,13 @@ public class Login extends  JFrame{
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 					Class.forName("com.mysql.cj.jdbc.Driver");
-					Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/login?useTimezone=true&serverTimezone=UTC","root","");
+					Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/onlinevoting?useTimezone=true&serverTimezone=UTC","root","");
 					Statement stmt = conn.createStatement();
-					String sql ="Select * from user where ID='"+id_textField.getText()+"' and BOD='"+pss_textField.getText()+"'";
+					String sql ="Select * from users where CardID='"+id_textField.getText()+"' and DOB='"+pss_textField.getText()+"'";
 					ResultSet rs =stmt.executeQuery(sql);
 					if(rs.next()) {
 						JOptionPane.showMessageDialog(null,"Success");
+						String text = id_textField.getText().toString();
 						Home home = new Home();
 						home.setVisible(true);
 						setVisible(false);
