@@ -3,10 +3,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 
-public class Login extends  JFrame{
+public class Login extends JFrame {
 
-	private JTextField id_textField;
+	public JTextField id_textField;
 	private JTextField pss_textField;
+	public String text;
 
 	/**
 	 * Launch the application.
@@ -31,6 +32,7 @@ public class Login extends  JFrame{
 	public Login() {
 		initialize();
 	}
+	
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -53,13 +55,13 @@ public class Login extends  JFrame{
 				try {
 					Class.forName("com.mysql.cj.jdbc.Driver");
 					Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/onlinevoting?useTimezone=true&serverTimezone=UTC","root","");
-					Statement stmt = conn.createStatement();
-					String sql ="Select * from users where CardID='"+id_textField.getText()+"' and DOB='"+pss_textField.getText()+"'";
-					ResultSet rs =stmt.executeQuery(sql);
+					PreparedStatement st = (PreparedStatement) conn.prepareStatement("Select CardID, DOB from users where CardID=? and DOB=?");
+	                    st.setString(1, id_textField.getText());
+	                    st.setString(2, pss_textField.getText());
+	                    ResultSet rs = st.executeQuery();
 					if(rs.next()) {
-						JOptionPane.showMessageDialog(null,"Success");
-						String text = id_textField.getText().toString();
-						Home home = new Home();
+						//JOptionPane.showMessageDialog(null,"Success");
+						Home home = new Home(id_textField.getText());
 						home.setVisible(true);
 						setVisible(false);
 					}else {

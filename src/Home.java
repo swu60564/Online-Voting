@@ -34,6 +34,7 @@ import javax.swing.JRadioButton;
 import java.io.InputStream;
 import java.security.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import javax.swing.ImageIcon;
 
 public class Home extends  JFrame {
 
@@ -41,6 +42,8 @@ public class Home extends  JFrame {
 	public JRadioButton cd2RadioButton;
 	public String val;
 	public String message;
+	public JTextField sign_textField;
+	public String signt;
 	
 	/**
 	 * Launch the application.
@@ -49,7 +52,7 @@ public class Home extends  JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Home window = new Home();
+					Home window = new Home(null);
 					window.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -61,15 +64,10 @@ public class Home extends  JFrame {
 	/**
 	 * Create the application.
 	 */
-	public Home() {
-		initialize();
-	}
-
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
-
+	public Home(String name) {
 		setBounds(100, 100, 750, 480);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setLayout(null);
@@ -86,19 +84,6 @@ public class Home extends  JFrame {
 		lblNewLabel.setBounds(188, 11, 343, 120);
 		homePanel.add(lblNewLabel);
 		
-		JLabel lblNewLabel_name = new JLabel("Name");
-		lblNewLabel_name.addComponentListener(new ComponentAdapter() {
-			@Override
-			public void componentShown(ComponentEvent e) {
-			}
-		});
-		lblNewLabel_name.setBounds(597, 26, 46, 14);
-		homePanel.add(lblNewLabel_name);
-		
-		JLabel lblNewLabel_surname = new JLabel("Surname");
-		lblNewLabel_surname.setBounds(652, 26, 46, 14);
-		homePanel.add(lblNewLabel_surname);
-		
 		JButton logOutButton = new JButton("Log Out");
 		logOutButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -110,101 +95,136 @@ public class Home extends  JFrame {
 		logOutButton.setForeground(new Color(255, 255, 255));
 		logOutButton.setBackground(new Color(255, 0, 0));
 		logOutButton.setFont(new Font("MS PGothic", Font.BOLD, 17));
-		logOutButton.setBounds(597, 51, 104, 37);
+		logOutButton.setBounds(607, 23, 104, 37);
 		homePanel.add(logOutButton);
 		
-		JLabel candidateLabel_1 = new JLabel("pic");
-		candidateLabel_1.setBounds(113, 142, 136, 164);
+		JLabel candidateLabel_1 = new JLabel("");
+		candidateLabel_1.setIcon(new ImageIcon("./images/taylor3.jpg"));
+		candidateLabel_1.setBounds(123, 136, 155, 177);
 		homePanel.add(candidateLabel_1);
 		
-		JLabel candidateLabel_2 = new JLabel("pic2");
-		candidateLabel_2.setBounds(406, 142, 136, 164);
+		JLabel candidateLabel_2 = new JLabel("");
+		candidateLabel_2.setIcon(new ImageIcon("./images/justin.jpg"));
+		candidateLabel_2.setBounds(423, 136, 155, 177);
 		homePanel.add(candidateLabel_2);
 		
 		JButton voteButton = new JButton("Vote");
+		voteButton.setForeground(new Color(255, 255, 255));
+		voteButton.setBackground(new Color(0, 128, 0));
+		voteButton.setFont(new Font("MS PGothic", Font.BOLD, 35));
 		voteButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				 jRadioButt();
+				String qual = " ";
+				  
+		           if (cd1RadioButton.isSelected()) { 
+
+		               qual = "(1) Taylor Swift";
+		               val = cd1RadioButton.getText().toString();
+		               //JOptionPane.showMessageDialog(Home.this, val);
+		               JOptionPane.showMessageDialog(Home.this, "Thank you for your voting");
+		               Login logout = new Login();
+		               logout.setVisible(true);
+		               setVisible(false);
+		           } 
+
+		           else if (cd2RadioButton.isSelected()) { 
+
+		               qual = "(2) Donal Trump"; 
+		               val = cd2RadioButton.getText().toString();
+		               //JOptionPane.showMessageDialog(Home.this, val);
+		               JOptionPane.showMessageDialog(Home.this, "Thank you for your voting");
+		               Login logout = new Login();
+						logout.setVisible(true);
+						setVisible(false);
+		           } 
+		           else { 
+		               qual = "You don't want to vote. Are you sure?";
+		               val = "Vote no";
+		               JOptionPane.showMessageDialog(Home.this, qual);
+		           } 
+		           
+		           message = val;
+		           System.out.println(message);
+		           try {
+					KeyPair pair = generateKeyPair();
+					System.out.println("Insert vote " + name);
+					String cipherText = encrypt(message, pair.getPublic());
+					System.out.println(cipherText);
+					signt = sign_textField.getText().toString();
+					String signature = sign(signt, pair.getPrivate());
+					System.out.println(signature);
+					Class.forName("com.mysql.cj.jdbc.Driver");
+					Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/onlinevoting?useTimezone=true&serverTimezone=UTC","root","");
+					PreparedStatement st = (PreparedStatement) conn.prepareStatement("Update users set Result=?, Signature=? where CardID=?");
+					st.setString(1, cipherText);
+                    st.setString(2, signature);
+                    st.setString(3, name);
+                    st.executeUpdate();
+                    
+                    Class.forName("com.mysql.cj.jdbc.Driver");
+					Connection connec = DriverManager.getConnection("jdbc:mysql://localhost:3306/onlinevoting?useTimezone=true&serverTimezone=UTC","root","");
+                    PreparedStatement sel = (PreparedStatement) connec.prepareStatement("Select Result, Signature, Verify from users where CardID=?");
+                    sel.setString(1, name);
+                    ResultSet rs = sel.executeQuery();
+                    while (rs.next()) {
+                    	String resul = rs.getString("Result");
+                    	String signa = rs.getString("Signature");
+                        String verif = rs.getString("Verify");
+                        System.out.println(resul);
+                        System.out.println(signa);
+                        String decipheredMessage = decrypt(resul, pair.getPrivate());
+                        System.out.println("User selected: " + decipheredMessage);
+                        boolean isCorrect = verify(verif, signa, pair.getPublic());
+                        System.out.println("Signature is: " + verif);
+                        System.out.println("Signature correct: " + isCorrect);
+                        
+                        Class.forName("com.mysql.cj.jdbc.Driver");
+    					Connection connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/onlinevoting?useTimezone=true&serverTimezone=UTC","root","");
+    					PreparedStatement stm = (PreparedStatement) connect.prepareStatement("Insert INTO results (CardID,Selected,Verify) Values (?,?,?)");
+    					stm.setString(1, name);
+                        stm.setString(2, decipheredMessage);
+                        stm.setBoolean(3, isCorrect);
+                        stm.executeUpdate();
+                    }
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
-		voteButton.setBounds(289, 395, 89, 23);
+		voteButton.setBounds(289, 382, 120, 48);
 		homePanel.add(voteButton);
 		
 		cd1RadioButton = new JRadioButton("(1) Taylor Swift");
-		cd1RadioButton.setBounds(113, 316, 109, 23);
+		cd1RadioButton.setBounds(146, 316, 114, 23);
 		homePanel.add(cd1RadioButton);
 		
 		cd2RadioButton = new JRadioButton("(2) Donal Trump");
-		cd2RadioButton.setBounds(406, 316, 109, 23);
+		cd2RadioButton.setBounds(444, 316, 120, 23);
 		homePanel.add(cd2RadioButton);
 		
 		ButtonGroup group = new ButtonGroup();
 		group.add(cd1RadioButton);
 		group.add(cd2RadioButton);
+		
+		JLabel lblNewLabel_1 = new JLabel("Who do you need to become the President?");
+		lblNewLabel_1.setForeground(new Color(255, 255, 0));
+		lblNewLabel_1.setFont(new Font("Calibri", Font.BOLD, 15));
+		lblNewLabel_1.setBounds(212, 111, 287, 14);
+		homePanel.add(lblNewLabel_1);
+		
+		sign_textField = new JTextField();
+		sign_textField.setBounds(289, 353, 120, 23);
+		homePanel.add(sign_textField);
+		sign_textField.setColumns(10);
+		
+		JLabel lblNewLabel_2 = new JLabel("Your Signature");
+		lblNewLabel_2.setFont(new Font("Calibri", Font.BOLD, 13));
+		lblNewLabel_2.setForeground(new Color(255, 255, 0));
+		lblNewLabel_2.setBounds(310, 337, 81, 14);
+		homePanel.add(lblNewLabel_2);
 	}
 	
-	public void displayName() {
-		/*Class.forName("com.mysql.cj.jdbc.Driver");
-		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/onlinevoting?useTimezone=true&serverTimezone=UTC","root","");
-		Statement stmt = conn.createStatement();
-		String sql ="Select * from users where CardID='"+id_textField.getText()+"' and DOB='"+pss_textField.getText()+"'";
-		ResultSet rs =stmt.executeQuery(sql);*/
-	}
-	
-	public void jRadioButt() {
-		String qual = " ";
-		//val = " ";
-		//String val1;
-		  
-           if (cd1RadioButton.isSelected()) { 
-
-               qual = "(1) Taylor Swift";
-               val = cd1RadioButton.getText().toString();
-               JOptionPane.showMessageDialog(Home.this, val);
-               JOptionPane.showMessageDialog(Home.this, "Thank you for your voting");
-               Login logout = new Login();
-               logout.setVisible(true);
-               setVisible(false);
-               //System.out.println(val);
-           } 
-
-           else if (cd2RadioButton.isSelected()) { 
-
-               qual = "(2) Donal Trump"; 
-               val = cd2RadioButton.getText().toString();
-               JOptionPane.showMessageDialog(Home.this, val);
-               JOptionPane.showMessageDialog(Home.this, "Thank you for your voting");
-               Login logout = new Login();
-				logout.setVisible(true);
-				setVisible(false);
-           } 
-           else { 
-
-               qual = "Please select";
-               JOptionPane.showMessageDialog(Home.this, qual);
-           } 
-           
-           message = val;
-           System.out.println(message);
-           try {
-			KeyPair pair = generateKeyPair();
-			String cipherText = encrypt(message, pair.getPublic());
-			System.out.println(cipherText);
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/onlinevoting?useTimezone=true&serverTimezone=UTC","root","");
-			Statement stmt = conn.createStatement();
-			String sql ="UPDATE users SET Result='"+cipherText.toString()+"' where Name = 'Livia' ";
-			stmt.execute(sql);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-           
-	}
-	
-	public String getVal() {
-		return this.message;
-	}
 	
 	public static KeyPair generateKeyPair() throws Exception {
 
