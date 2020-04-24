@@ -165,9 +165,6 @@ public class Home extends  JFrame {
                Login logout = new Login();
                logout.setVisible(true);
                setVisible(false);
-               //RsaExample enc = new RsaExample();
-               //val = enc.message;
-               //JOptionPane.showMessageDialog(Home.this, val);
                //System.out.println(val);
            } 
 
